@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "The staging environment being deployed into."
+            }
+        },
+        "project": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 5,
+            "metadata": {
+                "description": "The 4 character project code. Used to create resource names."
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "aksCluster1",
+            "type": "Microsoft.ContainerService/managedClusters",
+            "apiVersion": "2021-05-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "kubernetesVersion": "1.15.7",
+                "dnsPrefix": "dnsprefix",
+                "agentPoolProfiles": [
+                    {
+                        "name": "agentpool",
+                        "count": 2,
+                        "vmSize": "Standard_A1",
+                        "osType": "Linux",
+                        "storageProfile": "ManagedDisks"
+                    }
+                ],
+                "linuxProfile": {
+                    "adminUsername": "adminUserName",
+                    "ssh": {
+                        "publicKeys": [
+                            {
+                                "keyData": "keyData"
+                            }
+                        ]
+                    }
+                },
+                "servicePrincipalProfile": {
+                    "clientId": "servicePrincipalAppId",
+                    "secret": "servicePrincipalAppPassword"
+                }
+            }
+        },
+        {
+            "name": "virtualNetwork1",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "virtualNetwork1"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "Subnet-1",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
